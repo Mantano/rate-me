@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2007 -  2015 Mantano SAS -->
+<!-- All Rights Reserved -->
+
+<resources>
+    <string name="rateme__dialog_thanks">Thanks for the rating!</string><!-- ** -->
+    <string name="rateme__dialog_message">How would you rate our app?</string><!-- ** -->
+    <string name="rateme__dialog_button_rate_in_store">Rate in %1$s</string><!-- ** -->
+    <string name="rateme__dialog_button_share_your_feedback">Share your feedback</string><!-- ** -->
+    <string name="rateme__email_subject">Feedback for %1$s</string><!-- ** -->
+</resources>

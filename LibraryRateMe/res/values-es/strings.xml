@@ -5,6 +5,11 @@
     <string name="rateme__dialog_first_button_rate">Valorar en la Play Store</string>
     <string name="rateme__dialog_first_thanks">Gracias por la puntuación!</string>
     <string name="rateme__dialog_feedback_message">Alguna sugerencia para mejorar nuestra App ?</string>
-    <string name="rateme__email_subject">Sugerencias para %1$s</string>
     <string name="rateme__icon_content_description">Icono</string>
+
+    <string name="rateme__dialog_thanks">Gracias por la nota!</string>
+    <string name="rateme__dialog_message">¿Cómo calificarías nuestra aplicación?</string>
+    <string name="rateme__dialog_button_rate_in_store">Opina en %1$s</string>
+    <string name="rateme__dialog_button_share_your_feedback">Comparte tu opinión</string>
+    <string name="rateme__email_subject">Comentarios sobre %1$s</string>
 </resources>

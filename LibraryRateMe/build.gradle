@@ -5,15 +5,15 @@ repositories {
 }
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion "22.0.1"
-    resourcePrefix "rateme__"
+    compileSdkVersion 24
+    buildToolsVersion = '24.0.3'
+    resourcePrefix 'rateme__'
 
     defaultConfig {
         minSdkVersion 11
         targetSdkVersion 22
-        versionName project.VERSION_NAME
-        versionCode Integer.parseInt(project.VERSION_CODE)
+        versionName VERSION_NAME
+        versionCode Integer.parseInt(VERSION_CODE)
     }
 
     sourceSets {
@@ -32,5 +32,3 @@ android {
         abortOnError true
     }
 }
-// Used to push in maven
-apply from: '../maven_push.gradle'

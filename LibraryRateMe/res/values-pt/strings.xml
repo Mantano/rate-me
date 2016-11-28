@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2007 -  2015 Mantano SAS -->
+<!-- All Rights Reserved -->
+
+<resources>
+    <string name="rateme__dialog_thanks">Obrigado pela classificação!</string>
+    <string name="rateme__dialog_message">Como classificaria o nosso aplicativo?</string>
+    <string name="rateme__dialog_button_rate_in_store">Resenha en %1$s</string><!-- ** -->
+    <string name="rateme__dialog_button_share_your_feedback">Partilhe os seus comentários</string>
+    <string name="rateme__email_subject">Comentários sobre %1$s</string>
+</resources>

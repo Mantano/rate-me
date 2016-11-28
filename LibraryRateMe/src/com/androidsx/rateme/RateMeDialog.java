@@ -6,8 +6,6 @@ import android.app.DialogFragment;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.LightingColorFilter;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -37,8 +35,8 @@ public class RateMeDialog extends DialogFragment {
     private View mView;
     private View tView;
     private Button close;
+    private TextView message;
     private RatingBar ratingBar;
-    private LayerDrawable stars;
     private Button rateMe;
     private Button noThanks;
     private Button share;
@@ -52,6 +50,8 @@ public class RateMeDialog extends DialogFragment {
     private int bodyTextColor;
     private boolean feedbackByEmailEnabled;
     private String feedbackEmail;
+    private OnFeedbackListener feedbackListener;
+    private String storeName;
     private boolean showShareButton;
     private int appIconResId;
     private int lineDividerColor;
@@ -68,25 +68,27 @@ public class RateMeDialog extends DialogFragment {
         // Empty constructor, required for pause/resume
     }
 
-    public RateMeDialog(String appPackageName,
-                        String appName,
-                        int headerBackgroundColor,
-                        int headerTextColor,
-                        int bodyBackgroundColor,
-                        int bodyTextColor,
-                        boolean feedbackByEmailEnabled,
-                        String feedbackEmail,
-                        boolean showShareButton,
-                        int appIconResId,
-                        int lineDividerColor,
-                        int rateButtonBackgroundColor,
-                        int rateButtonTextColor,
-                        int rateButtonPressedBackgroundColor,
-                        int defaultStarsSelected,
-                        int iconCloseColor,
-                        int iconShareColor,
-                        boolean showOKButtonByDefault,
-                        OnRatingListener onRatingListener) {
+    public RateMeDialog( String appPackageName,
+                         String appName,
+                         int headerBackgroundColor,
+                         int headerTextColor,
+                         int bodyBackgroundColor,
+                         int bodyTextColor,
+                         boolean feedbackByEmailEnabled,
+                         String feedbackEmail,
+                         OnFeedbackListener feedbackListener,
+                         String storeName,
+                         boolean showShareButton,
+                         int appIconResId,
+                         int lineDividerColor,
+                         int rateButtonBackgroundColor,
+                         int rateButtonTextColor,
+                         int rateButtonPressedBackgroundColor,
+                         int defaultStarsSelected,
+                         int iconCloseColor,
+                         int iconShareColor,
+                         boolean showOKButtonByDefault,
+                         OnRatingListener onRatingListener ) {
         this.appPackageName = appPackageName;
         this.appName = appName;
         this.headerBackgroundColor = headerBackgroundColor;
@@ -95,6 +97,8 @@ public class RateMeDialog extends DialogFragment {
         this.bodyTextColor = bodyTextColor;
         this.feedbackByEmailEnabled = feedbackByEmailEnabled;
         this.feedbackEmail = feedbackEmail;
+        this.feedbackListener = feedbackListener;
+        this.storeName = storeName;
         this.showShareButton = showShareButton;
         this.appIconResId = appIconResId;
         this.lineDividerColor = lineDividerColor;
@@ -117,7 +121,6 @@ public class RateMeDialog extends DialogFragment {
 
         setIconsTitleColor(iconCloseColor, iconShareColor);
 
-        stars.getDrawable(2).setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC_ATOP);
         ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
 
             @Override
@@ -125,12 +128,15 @@ public class RateMeDialog extends DialogFragment {
                 if (rating >= 4.0) {
                     rateMe.setVisibility(View.VISIBLE);
                     noThanks.setVisibility(View.GONE);
+                    message.setText(R.string.rateme__dialog_thanks);
                 } else if (rating > 0.0){
                     noThanks.setVisibility(View.VISIBLE);
                     rateMe.setVisibility(View.GONE);
+                    message.setText(R.string.rateme__dialog_thanks);
                 } else {
                     noThanks.setVisibility(View.GONE);
                     rateMe.setVisibility(View.GONE);
+                    message.setText(R.string.rateme__dialog_message);
                 }
                 defaultStarsSelected = (int) rating;
             }
@@ -187,6 +193,8 @@ public class RateMeDialog extends DialogFragment {
             this.bodyTextColor = savedInstanceState.getInt("bodyTextColor");
             this.feedbackByEmailEnabled = savedInstanceState.getBoolean("feedbackByEmailEnabled");
             this.feedbackEmail = savedInstanceState.getString("feedbackEmail");
+            this.feedbackListener = savedInstanceState.getParcelable("feedbackListener");
+            this.storeName = savedInstanceState.getString("storeName");
             this.showShareButton = savedInstanceState.getBoolean("showShareButton");
             this.appIconResId = savedInstanceState.getInt("appIconResId");
             this.lineDividerColor = savedInstanceState.getInt("lineDividerColor");
@@ -213,6 +221,8 @@ public class RateMeDialog extends DialogFragment {
         outState.putInt("bodyTextColor", bodyTextColor);
         outState.putBoolean("feedbackByEmailEnabled", feedbackByEmailEnabled);
         outState.putString("feedbackEmail", feedbackEmail);
+        outState.putParcelable("feedbackListener", feedbackListener);
+        outState.putString("storeName", storeName);
         outState.putBoolean("showShareButton", showShareButton);
         outState.putInt("appIconResId", appIconResId);
         outState.putInt("lineDividerColor", lineDividerColor);
@@ -245,7 +255,7 @@ public class RateMeDialog extends DialogFragment {
         rateMe = (Button) mView.findViewById(R.id.buttonRateMe);
         noThanks = (Button) mView.findViewById(R.id.buttonThanks);
         ratingBar = (RatingBar) mView.findViewById(R.id.ratingBar);
-        stars = (LayerDrawable) ratingBar.getProgressDrawable();
+        message = (TextView) mView.findViewById(R.id.rating_dialog_message);
         mView.setBackgroundColor(bodyBackgroundColor);
         tView.setBackgroundColor(headerBackgroundColor);
         ((TextView) tView.findViewById(R.id.dialog_title)).setTextColor(headerTextColor);
@@ -256,12 +266,13 @@ public class RateMeDialog extends DialogFragment {
             ((ImageView) iconImage).setImageResource(appIconResId);
             iconImage.setVisibility(View.VISIBLE);
         }
-        ((TextView) mView.findViewById(R.id.rating_dialog_message)).setTextColor(bodyTextColor);
+        message.setTextColor(bodyTextColor);
 
         rateMe.setBackgroundColor(rateButtonBackgroundColor);
         noThanks.setBackgroundColor(rateButtonBackgroundColor);
         rateMe.setTextColor(rateButtonTextColor);
         noThanks.setTextColor(rateButtonTextColor);
+        rateMe.setText(getString(R.string.rateme__dialog_button_rate_in_store, storeName));
 
     }
 
@@ -296,6 +307,10 @@ public class RateMeDialog extends DialogFragment {
                     dialogMail.show(getFragmentManager(), "feedbackByEmailEnabled");
                     dismiss();
                     Log.d(TAG, "No: open the feedback dialog");
+                } else if (feedbackListener != null) {
+                    dismiss();
+                    feedbackListener.onFeedback(ratingBar.getRating(),
+                            onRatingListener);
                 } else {
                     dismiss();
                     onRatingListener.onRating(OnRatingListener.RatingAction.LOW_RATING, ratingBar.getRating());
@@ -334,6 +349,7 @@ public class RateMeDialog extends DialogFragment {
 
     public static class Builder {
         private static final int LINE_DIVIDER_COLOR_UNSET = -1;
+        private static final String DEFAULT_STORE_NAME = "Play store";
         private final String appPackageName;
         private final String appName;
         private int headerBackgroundColor = Color.BLACK;
@@ -342,6 +358,8 @@ public class RateMeDialog extends DialogFragment {
         private int bodyTextColor = Color.WHITE;
         private boolean feedbackByEmailEnabled = false;
         private String feedbackEmail = null;
+        private OnFeedbackListener feedbackListener = null;
+        private String storeName = DEFAULT_STORE_NAME;
         private boolean showShareButton = false;
         private int appIconResId = 0;
         private int lineDividerColor = LINE_DIVIDER_COLOR_UNSET;
@@ -390,6 +408,19 @@ public class RateMeDialog extends DialogFragment {
         public Builder enableFeedbackByEmail(String email) {
             this.feedbackByEmailEnabled = true;
             this.feedbackEmail = email;
+            return this;
+        }
+
+        /**
+         * Enables a feedback listener to customize the feedback button behavior
+         */
+        public Builder setCustomOnFeedbackListener( OnFeedbackListener feedbackListener ) {
+            this.feedbackListener = feedbackListener;
+            return this;
+        }
+
+        public Builder setStoreName( String storeName ) {
+            this.storeName = storeName;
             return this;
         }
 
@@ -469,6 +500,8 @@ public class RateMeDialog extends DialogFragment {
                     bodyTextColor,
                     feedbackByEmailEnabled,
                     feedbackEmail,
+                    feedbackListener,
+                    storeName,
                     showShareButton,
                     appIconResId,
                     lineDividerColor,
