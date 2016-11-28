@@ -4,6 +4,5 @@ import android.os.Parcelable;
 
 public interface OnFeedbackListener extends Parcelable {
 
-    void onFeedback( float rating,
-                     OnRatingListener onRatingListener );
+    void onFeedback( float rating );
 }

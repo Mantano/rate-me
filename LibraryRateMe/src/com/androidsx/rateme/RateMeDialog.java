@@ -307,13 +307,12 @@ public class RateMeDialog extends DialogFragment {
                     dialogMail.show(getFragmentManager(), "feedbackByEmailEnabled");
                     dismiss();
                     Log.d(TAG, "No: open the feedback dialog");
-                } else if (feedbackListener != null) {
-                    dismiss();
-                    feedbackListener.onFeedback(ratingBar.getRating(),
-                            onRatingListener);
                 } else {
                     dismiss();
                     onRatingListener.onRating(OnRatingListener.RatingAction.LOW_RATING, ratingBar.getRating());
+                    if (feedbackListener != null) {
+                        feedbackListener.onFeedback(ratingBar.getRating());
+                    }
                 }
                 RateMeDialogTimer.setOptOut(getActivity(), true);
             }
